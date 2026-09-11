@@ -1,7 +1,9 @@
 import numpy as np
 
+#log-sum-exp trick
 def softmax(z):
-    exp_z = np.exp(z - np.max(z, axis=1, keepdims=True))
+    z_shifted = z - np.max(z, axis=1, keepdims=True)
+    exp_z = np.exp(z_shifted)
     return exp_z / np.sum(exp_z, axis=1, keepdims=True)
     
 def softmax_regression(X, y, n_classes, lr=0.01, n_iters=1000):
