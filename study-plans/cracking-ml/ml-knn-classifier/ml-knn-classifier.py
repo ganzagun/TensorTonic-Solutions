@@ -9,15 +9,24 @@ def knn_classify(X_train, y_train, X_test, k=3):
 
     y_test = []
 
-    for X_curr in X_test:
-        X_curr = X_curr.reshape(1, d)
-        dist = np.sum((X_train - X_curr)**2, axis = 1)
-        dist = np.sqrt(dist)
-        top_idx = np.argpartition(dist, k-1)[:k]
+     # Calculate squared Euclidean distance
+    # between every test point and every training point
+    dist = np.sum(
+        (X_test[:, None, :] - X_train[None, :, :]) ** 2,
+        axis=2
+    )
 
-        values, counts = np.unique(y_train[top_idx], return_counts=True)
-        y_cur = values[np.argmax(counts)]
-        y_test.append(y_cur)
+    top_idx = np.argpartition(dist, k - 1, axis=1)[:, :k]
+
+    y_test = []
+
+    # Majority vote for each test point
+    for idx in top_idx:
+        values, counts = np.unique(
+            y_train[idx],
+            return_counts=True
+        )
+        y_test.append(values[np.argmax(counts)])
 
     return np.array(y_test)
 
